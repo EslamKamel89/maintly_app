@@ -25,24 +25,29 @@ class Clr {
 }
 
 final lightClr = Clr(
-  primaryColor: Color(0xFF4169E1),
-  primaryColorLight: Color(0xFF6A91F0),
-  primaryColorDark: Color(0xFF2747A7),
-  secondaryHeaderColor: Color(0xFFE0FFFF),
-  scaffoldBackgroundColor: Color(0xFFF5F5F5),
-  dialogBackgroundColor: Color(0xFFE0FFFF),
-  cardColor: Color(0xFFFFFFFF),
-  canvasColor: Color(0xFFF5F5F5),
+  primaryColor: const Color(0xFF4397CB),
+  primaryColorLight: const Color(0xFF6DB5DE),
+  primaryColorDark: const Color(0xFF2F7CAD),
+
+  secondaryHeaderColor: const Color(0xFFF3F8FC),
+
+  scaffoldBackgroundColor: const Color(0xFFF8FAFC), // Slate 50
+  dialogBackgroundColor: const Color(0xFFFFFFFF),
+  cardColor: const Color(0xFFFFFFFF),
+  canvasColor: const Color(0xFFF8FAFC),
 );
+
 final darkClr = Clr(
-  primaryColor: Color(0xFF5A7FFF),
-  primaryColorDark: Color(0xFF2A4FBF),
-  primaryColorLight: Color(0xFF7A9FFF),
-  secondaryHeaderColor: Color(0xFF88FFFF),
-  scaffoldBackgroundColor: Color(0xFF121212), //
-  dialogBackgroundColor: Color(0xFF1A1A1A),
-  cardColor: Color(0xFF1E1E1E),
-  canvasColor: Color(0xFF121212), //
+  primaryColor: const Color(0xFF4397CB),
+  primaryColorLight: const Color(0xFF6DB5DE),
+  primaryColorDark: const Color(0xFF2F7CAD),
+
+  secondaryHeaderColor: const Color(0xFF1E293B), // Slate 800
+
+  scaffoldBackgroundColor: const Color(0xFF0F172A), // Slate 900
+  dialogBackgroundColor: const Color(0xFF1E293B), // Slate 800
+  cardColor: const Color(0xFF1E293B),
+  canvasColor: const Color(0xFF0F172A),
 );
 
 final ThemeData lightTheme = ThemeData(
@@ -54,24 +59,6 @@ final ThemeData lightTheme = ThemeData(
   scaffoldBackgroundColor: lightClr.scaffoldBackgroundColor,
   cardColor: lightClr.cardColor,
   canvasColor: lightClr.scaffoldBackgroundColor,
-
-  // Typography
-  // fontFamily: 'Roboto', // Use the 'Roboto' font
-  // textTheme:  TextTheme(
-  //   headline1: TextStyle(fontSize: 96, fontWeight: FontWeight.bold, color: Colors.black),
-  //   headline2: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.black),
-  //   headline3: TextStyle(fontSize: 48, fontWeight: FontWeight.normal, color: Colors.black),
-  //   headline4: TextStyle(fontSize: 34, fontWeight: FontWeight.normal, color: Colors.black),
-  //   headline5: TextStyle(fontSize: 24, fontWeight: FontWeight.normal, color: Colors.black),
-  //   headline6: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
-  //   subtitle1: TextStyle(fontSize: 16 , fontWeight: FontWeight.normal, color: Colors.black),
-  //   subtitle2: TextStyle(fontSize: 14 , fontWeight: FontWeight.bold, color: Colors.black),
-  //   bodyText1: TextStyle(fontSize: 16 , fontWeight: FontWeight.normal, color: Colors.black87),
-  //   bodyText2: TextStyle(fontSize: 14 , fontWeight: FontWeight.normal, color: Colors.black87),
-  //   button: TextStyle(fontSize: 14 , fontWeight: FontWeight.bold, color: Colors.white),
-  //   caption: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black54),
-  //   overline: TextStyle(fontSize: 10, fontWeight: FontWeight.normal, color: Colors.black54),
-  // ),
 
   // Buttons
   elevatedButtonTheme: ElevatedButtonThemeData(
@@ -133,8 +120,7 @@ final ThemeData lightTheme = ThemeData(
   ),
 
   // Divider
-  dividerColor: Color(0xFFBDBDBD),
-
+  dividerColor: const Color(0xFFE2E8F0), // Light
   // Icons
   iconTheme: IconThemeData(
     color: lightClr.primaryColor, // Primary color for icons
@@ -158,7 +144,8 @@ final ThemeData lightTheme = ThemeData(
     selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
     unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
   ),
-  dialogTheme: DialogThemeData(backgroundColor: lightClr.secondaryHeaderColor),
+  dialogTheme: DialogThemeData(backgroundColor: lightClr.dialogBackgroundColor),
+  colorScheme: ColorScheme.fromSeed(seedColor: lightClr.primaryColor, brightness: Brightness.light),
 );
 
 final ThemeData darkTheme = ThemeData(
@@ -171,24 +158,6 @@ final ThemeData darkTheme = ThemeData(
   cardColor: darkClr.cardColor,
   secondaryHeaderColor: darkClr.secondaryHeaderColor,
   canvasColor: darkClr.scaffoldBackgroundColor,
-
-  // Typography
-  // fontFamily: 'Roboto', // Use the 'Roboto' font
-  // textTheme:  TextTheme(
-  //   headline1: TextStyle(fontSize: 96, fontWeight: FontWeight.bold, color: Colors.white),
-  //   headline2: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.white),
-  //   headline3: TextStyle(fontSize: 48, fontWeight: FontWeight.normal, color: Colors.white),
-  //   headline4: TextStyle(fontSize: 34, fontWeight: FontWeight.normal, color: Colors.white),
-  //   headline5: TextStyle(fontSize: 24, fontWeight: FontWeight.normal, color: Colors.white),
-  //   headline6: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-  //   subtitle1: TextStyle(fontSize: 16 , fontWeight: FontWeight.normal, color: Colors.white70),
-  //   subtitle2: TextStyle(fontSize: 14 , fontWeight: FontWeight.bold, color: Colors.white70),
-  //   bodyText1: TextStyle(fontSize: 16 , fontWeight: FontWeight.normal, color: Colors.white70),
-  //   bodyText2: TextStyle(fontSize: 14 , fontWeight: FontWeight.normal, color: Colors.white70),
-  //   button: TextStyle(fontSize: 14 , fontWeight: FontWeight.bold, color: Colors.white),
-  //   caption: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white54),
-  //   overline: TextStyle(fontSize: 10, fontWeight: FontWeight.normal, color: Colors.white54),
-  // ),
 
   // Buttons
   elevatedButtonTheme: ElevatedButtonThemeData(
@@ -232,7 +201,7 @@ final ThemeData darkTheme = ThemeData(
   // Input Fields
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: darkClr.cardColor, // Dark grey background for inputs
+    fillColor: const Color(0xFF334155),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(15)),
       borderSide: BorderSide(color: darkClr.primaryColor),
@@ -250,12 +219,9 @@ final ThemeData darkTheme = ThemeData(
   ),
 
   // Divider
-  dividerColor: Color(0xFF888888),
-
+  dividerColor: const Color(0xFF334155), // Dark
   // Icons
-  iconTheme: IconThemeData(
-    color: Color(0xFF88FFFF), // Secondary color for icons
-  ),
+  iconTheme: IconThemeData(color: Colors.white70),
   primaryIconTheme: IconThemeData(
     color: Colors.white, // White icons for primary elements
   ),
@@ -275,4 +241,5 @@ final ThemeData darkTheme = ThemeData(
     unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
   ),
   dialogTheme: DialogThemeData(backgroundColor: darkClr.dialogBackgroundColor),
+  colorScheme: ColorScheme.fromSeed(seedColor: darkClr.primaryColor, brightness: Brightness.dark),
 );

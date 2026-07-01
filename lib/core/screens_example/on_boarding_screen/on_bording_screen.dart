@@ -13,14 +13,47 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final _pageController = PageController();
+  final PageController _pageController = PageController();
   int _currentPage = 0;
-  void _onNextPagePressed() {
-    if (_currentPage < _onBoardingData.length - 1) {
-      _pageController.nextPage(duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+
+  final List<_OnboardingItem> _pages = const [
+    _OnboardingItem(
+      image: AssetsData.onBoarding_1,
+      title: 'Welcome to Maintly',
+      description:
+          'View all of your assigned work orders from anywhere and stay synchronized with your maintenance team.',
+    ),
+    _OnboardingItem(
+      image: AssetsData.onBoarding_2,
+      title: 'Complete Work Efficiently',
+      description:
+          'Record labor, spare parts, notes and photos while updating work order progress in real time.',
+    ),
+    _OnboardingItem(
+      image: AssetsData.onBoarding_3,
+      title: 'Everything in One Place',
+      description:
+          'Access assets, locations and maintenance history on-site to complete every job with confidence.',
+    ),
+  ];
+
+  void _next() {
+    if (_currentPage < _pages.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+      );
     } else {
-      // TODO: NAVIGATE TO THE LOGIN SCREEN
+      // TODO: Navigate to Sign In screen.
     }
+  }
+
+  void _skip() {
+    _pageController.animateToPage(
+      _pages.length - 1,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -31,124 +64,92 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              SizedBox(
-                height: 500,
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: _onBoardingData.length,
-                  onPageChanged: (int index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  itemBuilder: (context, index) {
-                    return OnBoardingContent(
-                      image: _onBoardingData[index]['image'] ?? '',
-                      title: _onBoardingData[index]['title'] ?? '',
-                      description: _onBoardingData[index]['description'] ?? '',
-                    );
-                  },
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _currentPage == _pages.length - 1 ? null : _skip,
+                  child: txt('Skip', c: context.primaryColor),
                 ),
               ),
-              const SizedBox(height: 20),
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: _pages.length,
+                  onPageChanged: (value) {
+                    setState(() => _currentPage = value);
+                  },
+                  itemBuilder: (_, index) => _OnboardingPage(item: _pages[index]),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(_onBoardingData.length, (index) {
+                children: List.generate(_pages.length, (index) {
+                  final active = index == _currentPage;
                   return AnimatedContainer(
-                    duration: const Duration(seconds: 1),
+                    duration: const Duration(milliseconds: 250),
                     margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: _currentPage == index ? 12 : 8,
                     height: 8,
+                    width: active ? 28 : 8,
                     decoration: BoxDecoration(
-                      color: _currentPage == index ? context.primaryColor : Colors.grey,
-                      borderRadius: BorderRadius.circular(4),
+                      color: active ? context.primaryColor : Colors.grey.withOpacity(.35),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   );
                 }),
               ),
-              SizedBox(height: 20),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              const Sizer(height: 30),
+              SizedBox(
+                width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _onNextPagePressed,
-                  child: txt(_currentPage == _onBoardingData.length - 1 ? 'Continue' : 'Next'),
+                  onPressed: _next,
+                  child: txt(
+                    _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                    c: Colors.white,
+                  ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const Sizer(height: 20),
             ],
           ),
         ),
       ),
     );
   }
-
-  final List<Map<String, String>> _onBoardingData = [
-    {
-      "image": AssetsData.onBoarding_1,
-      "title": "Welcome to LocumFinder",
-      "description": "Discover the best locum opportunities tailored to your needs.",
-    },
-    {
-      "image": AssetsData.onBoarding_2,
-      "title": "Easy Job Search",
-      "description": "Quickly find locum positions with our advanced search filters.",
-    },
-    {
-      "image": AssetsData.onBoarding_3,
-      "title": "A Real-Time Updates",
-      "description": "Stay updated with instant job alerts and important updates.",
-    },
-    {
-      "image": AssetsData.onBoarding_4,
-      "title": "Seamless Applications",
-      "description": "Apply to locum jobs with just a few taps, no hassle.",
-    },
-    {
-      "image": AssetsData.onBoarding_5,
-      "title": "Manage Your Schedule",
-      "description": "Effortlessly keep track of your shifts and appointments.",
-    },
-    {
-      "image": AssetsData.onBoarding_6,
-      "title": "Join Our Community",
-      "description": "Connect with top healthcare facilities and fellow professionals.",
-    },
-  ];
 }
 
-class OnBoardingContent extends StatelessWidget {
-  const OnBoardingContent({
-    super.key,
-    required this.image,
-    required this.title,
-    required this.description,
-  });
+class _OnboardingPage extends StatelessWidget {
+  const _OnboardingPage({required this.item});
+
+  final _OnboardingItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(height: 280, child: Image.asset(item.image, fit: BoxFit.contain)),
+        const Sizer(height: 40),
+        txt(item.title, e: St.bold25, textAlign: TextAlign.center),
+        const Sizer(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: txt(
+            item.description,
+            e: St.reg16,
+            c: Colors.grey,
+            textAlign: TextAlign.center,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OnboardingItem {
   final String image;
   final String title;
   final String description;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        children: [
-          Material(
-            elevation: 5,
-            borderRadius: BorderRadius.circular(300),
-            child: Container(
-              height: 300,
-              clipBehavior: Clip.hardEdge,
-              decoration: const BoxDecoration(shape: BoxShape.circle),
-              // padding: EdgeInsets.symmetric(vertical: 5 ),
-              child: Image.asset(image, fit: BoxFit.fitHeight),
-            ),
-          ),
-          Sizer(height: 30),
-          txt(title, e: St.bold25, textAlign: TextAlign.center),
-          Sizer(height: 15),
-          txt(description, e: St.reg16, c: Colors.grey, textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
+
+  const _OnboardingItem({required this.image, required this.title, required this.description});
 }

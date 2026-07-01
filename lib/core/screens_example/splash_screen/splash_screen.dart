@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         Future.delayed(const Duration(seconds: 1), () {
           Navigator.of(
             context,
-          ).pushNamedAndRemoveUntil(AppRoutesNames.uiComponentScreen, (_) => false);
+          ).pushNamedAndRemoveUntil(AppRoutesNames.onBoardingScreen, (_) => false);
         });
       }
     });
