@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/router/middleware.dart';
-import 'package:maintly_app/core/screens_example/on_boarding_screen/on_bording_screen.dart';
-import 'package:maintly_app/core/screens_example/splash_screen/splash_screen.dart';
 import 'package:maintly_app/core/widgets/ui_components_screen.dart';
+import 'package:maintly_app/features/auth/presentation/screens/sign_in_screen.dart';
+import 'package:maintly_app/features/auth/presentation/screens/signup_screen.dart';
+import 'package:maintly_app/features/splash_and_on_boarding/presentation/screens/on_bording_screen.dart';
+import 'package:maintly_app/features/splash_and_on_boarding/presentation/screens/splash_screen.dart';
 
 class AppRouter {
   AppMiddleWare appMiddleWare;
@@ -24,6 +26,10 @@ class AppRouter {
           builder: (context) => const UiComponentScreen(),
           settings: routeSettings,
         );
+      case AppRoutesNames.signinScreen:
+        return CustomPageRoute(builder: (context) => const SignInScreen(), settings: routeSettings);
+      case AppRoutesNames.signupScreen:
+        return CustomPageRoute(builder: (context) => const SignUpScreen(), settings: routeSettings);
 
       default:
         return null;
