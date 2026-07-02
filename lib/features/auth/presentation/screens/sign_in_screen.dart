@@ -36,7 +36,9 @@ class _SignInScreenState extends State<SignInScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight:
-                    MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - 48,
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    48,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -59,12 +61,18 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ],
                           ),
-                          child: Image.asset(AssetsData.logo, fit: BoxFit.contain),
+                          child: Image.asset(
+                            AssetsData.logo,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       )
                       .animate()
                       .fadeIn(duration: 500.ms)
-                      .scale(begin: const Offset(.8, .8), curve: Curves.easeOutBack),
+                      .scale(
+                        begin: const Offset(.8, .8),
+                        curve: Curves.easeOutBack,
+                      ),
 
                   const SizedBox(height: 32),
 
@@ -83,7 +91,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   Text(
                     "Sign in to access your assigned work orders,\nassets and maintenance activities.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: Colors.grey.shade600, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.grey.shade600,
+                      height: 1.5,
+                    ),
                   ).animate().fadeIn(delay: 350.ms),
 
                   const SizedBox(height: 45),
@@ -141,7 +153,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       },
                       child: const Text(
                         "Sign In",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ).animate().fadeIn(delay: 850.ms).scaleX(begin: .9),
@@ -173,8 +188,12 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(56),
-                      side: BorderSide(color: context.primaryColor.withOpacity(.25)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      side: BorderSide(
+                        color: context.primaryColor.withOpacity(.25),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                     child: RichText(
                       text: TextSpan(
@@ -201,7 +220,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Text(
                       "Maintly",
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 12,
+                      ),
                     ),
                   ).animate().fadeIn(delay: 1200.ms),
                 ],
