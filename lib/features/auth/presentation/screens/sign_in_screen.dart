@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:maintly_app/core/enums/response_type.dart';
 import 'package:maintly_app/core/extensions/context-extensions.dart';
+import 'package:maintly_app/core/heleprs/snackbar.dart';
+import 'package:maintly_app/core/heleprs/validator.dart';
 import 'package:maintly_app/core/router/app_routes_names.dart';
+import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/core/widgets/inputs.dart';
+import 'package:maintly_app/features/auth/services/auth_service.dart';
 import 'package:maintly_app/utils/assets/assets.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -18,11 +23,47 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final AuthService _authService = serviceLocator<AuthService>();
+
+  bool _isLoading = false;
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _signIn() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_isLoading) return;
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final result = await _authService.login(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result.response == ResponseEnum.success) {
+      showSnackbar("Success", "Signed in successfully.", false);
+
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+
+      return;
+    }
   }
 
   @override
@@ -36,9 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight:
-                    MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top -
-                    48,
+                    MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - 48,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,18 +100,12 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ],
                           ),
-                          child: Image.asset(
-                            AssetsData.logo,
-                            fit: BoxFit.contain,
-                          ),
+                          child: Image.asset(AssetsData.logo, fit: BoxFit.contain),
                         ),
                       )
                       .animate()
                       .fadeIn(duration: 500.ms)
-                      .scale(
-                        begin: const Offset(.8, .8),
-                        curve: Curves.easeOutBack,
-                      ),
+                      .scale(begin: const Offset(.8, .8), curve: Curves.easeOutBack),
 
                   const SizedBox(height: 32),
 
@@ -91,11 +124,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   Text(
                     "Sign in to access your assigned work orders,\nassets and maintenance activities.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey.shade600,
-                      height: 1.5,
-                    ),
+                    style: TextStyle(fontSize: 15, color: Colors.grey.shade600, height: 1.5),
                   ).animate().fadeIn(delay: 350.ms),
 
                   const SizedBox(height: 45),
@@ -104,12 +133,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     labelText: "Email Address",
                     controller: _emailController,
                     prefixIcon: Icons.email_outlined,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return "Email is required";
-                      }
-                      return null;
-                    },
+                    validator: (value) =>
+                        valdiator(input: value, label: "Email", isRequired: true, isEmail: true),
                   ).animate().fadeIn(delay: 500.ms).slideX(begin: -.15),
 
                   const SizedBox(height: 18),
@@ -119,45 +144,40 @@ class _SignInScreenState extends State<SignInScreen> {
                     controller: _passwordController,
                     prefixIcon: Icons.lock_outline,
                     obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Password is required";
-                      }
-                      return null;
-                    },
+                    validator: (value) =>
+                        valdiator(input: value, label: "Password", isRequired: true, minChars: 8),
                   ).animate().fadeIn(delay: 650.ms).slideX(begin: .15),
 
-                  const SizedBox(height: 8),
+                  // const SizedBox(height: 8),
 
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // TODO
-                      },
-                      child: const Text("Forgot Password?"),
-                    ),
-                  ).animate().fadeIn(delay: 750.ms),
-
+                  // Align(
+                  //   alignment: Alignment.centerRight,
+                  //   child: TextButton(
+                  //     onPressed: () {
+                  //       // TODO
+                  //     },
+                  //     child: const Text("Forgot Password?"),
+                  //   ),
+                  // ).animate().fadeIn(delay: 750.ms),
                   const SizedBox(height: 18),
 
                   SizedBox(
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        }
-
-                        // TODO: Sign in
-                      },
-                      child: const Text(
-                        "Sign In",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      onPressed: _isLoading ? null : _signIn,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              "Sign In",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
                     ),
                   ).animate().fadeIn(delay: 850.ms).scaleX(begin: .9),
 
@@ -183,17 +203,15 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(height: 24),
 
                   OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutesNames.signupScreen);
-                    },
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            Navigator.pushNamed(context, AppRoutesNames.signupScreen);
+                          },
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(56),
-                      side: BorderSide(
-                        color: context.primaryColor.withOpacity(.25),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
+                      side: BorderSide(color: context.primaryColor.withOpacity(.25)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     child: RichText(
                       text: TextSpan(
@@ -215,15 +233,13 @@ class _SignInScreenState extends State<SignInScreen> {
                   ).animate().fadeIn(delay: 1050.ms).slideY(begin: .2),
 
                   const SizedBox(height: 10),
+
                   Padding(
                     padding: const EdgeInsets.only(top: 40),
                     child: Text(
                       "Maintly",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                     ),
                   ).animate().fadeIn(delay: 1200.ms),
                 ],

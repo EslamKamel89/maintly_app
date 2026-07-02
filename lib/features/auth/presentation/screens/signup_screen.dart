@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:maintly_app/core/enums/response_type.dart';
 import 'package:maintly_app/core/extensions/context-extensions.dart';
+import 'package:maintly_app/core/heleprs/snackbar.dart';
+import 'package:maintly_app/core/heleprs/validator.dart';
+import 'package:maintly_app/core/router/app_routes_names.dart';
+import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/core/widgets/inputs.dart';
+import 'package:maintly_app/features/auth/services/auth_service.dart';
 import 'package:maintly_app/utils/assets/assets.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -20,6 +26,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  final AuthService _authService = serviceLocator<AuthService>();
+
+  bool _isLoading = false;
+
   @override
   void dispose() {
     _organizationController.dispose();
@@ -28,6 +38,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _register() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (_isLoading) return;
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final result = await _authService.register(
+      organizationName: _organizationController.text.trim(),
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result.response == ResponseEnum.success) {
+      showSnackbar("Success", "Account created successfully.", false);
+
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+    }
   }
 
   @override
@@ -41,9 +84,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight:
-                    MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top -
-                    48,
+                    MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - 48,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,18 +107,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ],
                           ),
-                          child: Image.asset(
-                            AssetsData.logo,
-                            fit: BoxFit.contain,
-                          ),
+                          child: Image.asset(AssetsData.logo, fit: BoxFit.contain),
                         ),
                       )
                       .animate()
                       .fadeIn(duration: 500.ms)
-                      .scale(
-                        begin: const Offset(.8, .8),
-                        curve: Curves.easeOutBack,
-                      ),
+                      .scale(begin: const Offset(.8, .8), curve: Curves.easeOutBack),
 
                   const SizedBox(height: 32),
 
@@ -97,11 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     "Create your organization and owner account\n"
                     "to start managing maintenance activities.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey.shade600,
-                      height: 1.5,
-                    ),
+                    style: TextStyle(fontSize: 15, color: Colors.grey.shade600, height: 1.5),
                   ).animate().fadeIn(delay: 350.ms),
 
                   const SizedBox(height: 45),
@@ -110,12 +141,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     labelText: "Organization Name",
                     controller: _organizationController,
                     prefixIcon: Icons.business_outlined,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return "Organization name is required";
-                      }
-                      return null;
-                    },
+                    validator: (value) =>
+                        valdiator(input: value, label: "Organization Name", isRequired: true),
                   ).animate().fadeIn(delay: 450.ms).slideX(begin: -.15),
 
                   const SizedBox(height: 18),
@@ -124,12 +151,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     labelText: "Full Name",
                     controller: _nameController,
                     prefixIcon: Icons.person_outline,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return "Full name is required";
-                      }
-                      return null;
-                    },
+                    validator: (value) =>
+                        valdiator(input: value, label: "Full Name", isRequired: true),
                   ).animate().fadeIn(delay: 550.ms).slideX(begin: .15),
 
                   const SizedBox(height: 18),
@@ -138,13 +161,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     labelText: "Email Address",
                     controller: _emailController,
                     prefixIcon: Icons.email_outlined,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return "Email is required";
-                      }
-
-                      return null;
-                    },
+                    validator: (value) =>
+                        valdiator(input: value, label: "Email", isRequired: true, isEmail: true),
                   ).animate().fadeIn(delay: 650.ms).slideX(begin: -.15),
 
                   const SizedBox(height: 18),
@@ -154,17 +172,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: _passwordController,
                     prefixIcon: Icons.lock_outline,
                     obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Password is required";
-                      }
-
-                      if (value.length < 8) {
-                        return "Password must be at least 8 characters";
-                      }
-
-                      return null;
-                    },
+                    validator: (value) =>
+                        valdiator(input: value, label: "Password", isRequired: true, minChars: 8),
                   ).animate().fadeIn(delay: 750.ms).slideX(begin: .15),
 
                   const SizedBox(height: 18),
@@ -174,17 +183,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: _confirmPasswordController,
                     prefixIcon: Icons.lock_outline,
                     obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please confirm your password";
-                      }
-
-                      if (value != _passwordController.text) {
-                        return "Passwords do not match";
-                      }
-
-                      return null;
-                    },
+                    validator: (value) => valdiator(
+                      input: value,
+                      label: "Confirm Password",
+                      isRequired: true,
+                      isConfirmPassword: true,
+                      firstPassword: _passwordController.text,
+                    ),
                   ).animate().fadeIn(delay: 850.ms).slideX(begin: -.15),
 
                   const SizedBox(height: 30),
@@ -192,20 +197,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        }
-
-                        // TODO: Call /auth/register
-                      },
-                      child: const Text(
-                        "Create Account",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      onPressed: _isLoading ? null : _register,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              "Create Account",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
                     ),
                   ).animate().fadeIn(delay: 950.ms).scaleX(begin: .9),
 
@@ -231,17 +236,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 24),
 
                   OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            Navigator.pop(context);
+                          },
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(56),
-                      side: BorderSide(
-                        color: context.primaryColor.withOpacity(.25),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
+                      side: BorderSide(color: context.primaryColor.withOpacity(.25)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     child: RichText(
                       text: TextSpan(
@@ -269,10 +272,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Text(
                       "Maintly",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                     ),
                   ).animate().fadeIn(delay: 1300.ms),
                 ],
