@@ -7,6 +7,7 @@ import 'package:maintly_app/core/router/app_router.dart';
 import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/core/themes/theme_cubit.dart';
+import 'package:maintly_app/core/widgets/keyboard_dismiss_on_scroll.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
             supportedLocales: context.supportedLocales,
             localizationsDelegates: context.localizationDelegates,
             onGenerateRoute: serviceLocator<AppRouter>().onGenerateRoute,
+            builder: (context, child) => KeyboardDismissOnScroll(child: child ?? SizedBox()),
           );
         },
       ),
