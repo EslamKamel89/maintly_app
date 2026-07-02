@@ -147,7 +147,12 @@ Text txt(
   if (googleFontCallback != null) {
     return Text(
       text,
-      style: googleFontCallback().copyWith(fontSize: s, fontWeight: w, color: c, height: height),
+      style: googleFontCallback().copyWith(
+        fontSize: s,
+        fontWeight: w,
+        color: c,
+        height: height,
+      ),
       maxLines: maxLines,
       overflow: maxLines == null ? null : TextOverflow.ellipsis,
       textAlign: textAlign,
@@ -155,7 +160,13 @@ Text txt(
   }
   return Text(
     text,
-    style: TextStyle(fontSize: s, fontWeight: w, fontFamily: f, color: c, height: height),
+    style: TextStyle(
+      fontSize: s,
+      fontWeight: w,
+      fontFamily: f,
+      color: c,
+      height: height,
+    ),
     maxLines: maxLines,
     overflow: maxLines == null ? null : TextOverflow.ellipsis,
     textAlign: textAlign,

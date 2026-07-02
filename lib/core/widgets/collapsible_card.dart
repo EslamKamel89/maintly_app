@@ -46,10 +46,9 @@ class CollapsibleCardState extends State<CollapsibleCard>
                   padding: const EdgeInsets.only(top: 12.0),
                   child: widget.content,
                 ),
-                crossFadeState:
-                    _expanded
-                        ? CrossFadeState.showSecond
-                        : CrossFadeState.showFirst,
+                crossFadeState: _expanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
                 duration: Duration(milliseconds: 300),
               ),
             ],

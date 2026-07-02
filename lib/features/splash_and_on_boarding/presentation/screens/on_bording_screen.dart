@@ -45,7 +45,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.of(context).pushNamedAndRemoveUntil(AppRoutesNames.signinScreen, (_) => false);
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(AppRoutesNames.signinScreen, (_) => false);
     }
   }
 
@@ -79,7 +81,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   onPageChanged: (value) {
                     setState(() => _currentPage = value);
                   },
-                  itemBuilder: (_, index) => _OnboardingPage(item: _pages[index]),
+                  itemBuilder: (_, index) =>
+                      _OnboardingPage(item: _pages[index]),
                 ),
               ),
               Row(
@@ -92,7 +95,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     height: 8,
                     width: active ? 28 : 8,
                     decoration: BoxDecoration(
-                      color: active ? context.primaryColor : Colors.grey.withOpacity(.35),
+                      color: active
+                          ? context.primaryColor
+                          : Colors.grey.withOpacity(.35),
                       borderRadius: BorderRadius.circular(20),
                     ),
                   );
@@ -128,7 +133,10 @@ class _OnboardingPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(height: 280, child: Image.asset(item.image, fit: BoxFit.contain)),
+        SizedBox(
+          height: 280,
+          child: Image.asset(item.image, fit: BoxFit.contain),
+        ),
         const Sizer(height: 40),
         txt(item.title, e: St.bold25, textAlign: TextAlign.center),
         const Sizer(height: 16),
@@ -152,5 +160,9 @@ class _OnboardingItem {
   final String title;
   final String description;
 
-  const _OnboardingItem({required this.image, required this.title, required this.description});
+  const _OnboardingItem({
+    required this.image,
+    required this.title,
+    required this.description,
+  });
 }

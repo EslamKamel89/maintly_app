@@ -90,7 +90,11 @@ final ThemeData lightTheme = ThemeData(
     foregroundColor: Colors.white, // Text and icon color
     elevation: 4,
     centerTitle: true,
-    titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+    titleTextStyle: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
   ),
 
   // FloatingActionButton
@@ -145,7 +149,10 @@ final ThemeData lightTheme = ThemeData(
     unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
   ),
   dialogTheme: DialogThemeData(backgroundColor: lightClr.dialogBackgroundColor),
-  colorScheme: ColorScheme.fromSeed(seedColor: lightClr.primaryColor, brightness: Brightness.light),
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: lightClr.primaryColor,
+    brightness: Brightness.light,
+  ),
 );
 
 final ThemeData darkTheme = ThemeData(
@@ -189,7 +196,11 @@ final ThemeData darkTheme = ThemeData(
     foregroundColor: Colors.white, // Text and icon color
     elevation: 4,
     centerTitle: true,
-    titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+    titleTextStyle: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
   ),
 
   // FloatingActionButton
@@ -241,5 +252,8 @@ final ThemeData darkTheme = ThemeData(
     unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
   ),
   dialogTheme: DialogThemeData(backgroundColor: darkClr.dialogBackgroundColor),
-  colorScheme: ColorScheme.fromSeed(seedColor: darkClr.primaryColor, brightness: Brightness.dark),
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: darkClr.primaryColor,
+    brightness: Brightness.dark,
+  ),
 );

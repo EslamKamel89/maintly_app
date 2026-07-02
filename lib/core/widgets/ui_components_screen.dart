@@ -21,9 +21,14 @@ class _UiComponentScreenState extends State<UiComponentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Flutter Tempelate')),
-      floatingActionButton: FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.add),
+      ),
       drawer: const DefaultDrawer(),
-      bottomNavigationBar: DefaultBottomNavigationBar(handleNavigation: (int index) {}),
+      bottomNavigationBar: DefaultBottomNavigationBar(
+        handleNavigation: (int index) {},
+      ),
       body: DefaultScreenPadding(
         child: SingleChildScrollView(
           child: Column(
@@ -39,9 +44,15 @@ class _UiComponentScreenState extends State<UiComponentScreen> {
               const Sizer(),
               Text(AppStrings.WELCOME.tr()),
               const Sizer(),
-              ElevatedButton(onPressed: () {}, child: const Text('ElevatedButton')),
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('ElevatedButton'),
+              ),
               const Sizer(),
-              OutlinedButton(onPressed: () {}, child: const Text('OutlinedButton')),
+              OutlinedButton(
+                onPressed: () {},
+                child: const Text('OutlinedButton'),
+              ),
               const Sizer(),
               TextButton(onPressed: () {}, child: const Text('TextButton')),
               const Sizer(),
@@ -67,14 +78,22 @@ class _UiComponentScreenState extends State<UiComponentScreen> {
               const Sizer(),
               ElevatedButton(
                 onPressed: () {
-                  showSnackbar('Success', 'This is the default success snack bar', false);
+                  showSnackbar(
+                    'Success',
+                    'This is the default success snack bar',
+                    false,
+                  );
                 },
                 child: const Text('Success Snack Bar'),
               ),
               const Sizer(),
               ElevatedButton(
                 onPressed: () {
-                  showSnackbar('Error', 'This is the default error snack bar', true);
+                  showSnackbar(
+                    'Error',
+                    'This is the default error snack bar',
+                    true,
+                  );
                 },
                 child: const Text('Error Snack Bar'),
               ),

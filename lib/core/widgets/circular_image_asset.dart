@@ -18,14 +18,9 @@ class CircularImageAsset extends StatelessWidget {
       child: Container(
         height: height,
         clipBehavior: Clip.hardEdge,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-        ),
+        decoration: const BoxDecoration(shape: BoxShape.circle),
         // padding: EdgeInsets.symmetric(vertical: 5.h),
-        child: Image.asset(
-          image,
-          fit: BoxFit.fitHeight,
-        ),
+        child: Image.asset(image, fit: BoxFit.fitHeight),
       ),
     );
   }

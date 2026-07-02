@@ -2,10 +2,7 @@ import 'package:dio/dio.dart';
 
 class DioInterceptor extends Interceptor {
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     // options.headers[ApiKey.token] = 'FOODAPI ${sharedPreferences.getString(ApiKey.token) ?? ''}';
     // options.headers['Accept-Language'] = 'en ';
     options.headers['Accept'] = '*application/json*';
@@ -16,19 +13,13 @@ class DioInterceptor extends Interceptor {
 
   /// Called when the response is about to be resolved.
   @override
-  void onResponse(
-    Response response,
-    ResponseInterceptorHandler handler,
-  ) {
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
     super.onResponse(response, handler);
   }
 
   /// Called when an exception was occurred during the request.
   @override
-  void onError(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) {
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     super.onError(err, handler);
   }
 }

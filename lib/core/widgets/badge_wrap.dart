@@ -27,7 +27,11 @@ class BadgeWrap extends StatelessWidget {
       ),
       child: Text(
         item,
-        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: color),
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: color,
+        ),
       ),
     );
   }

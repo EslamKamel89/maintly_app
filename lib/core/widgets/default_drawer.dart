@@ -22,7 +22,9 @@ class DefaultDrawer extends StatelessWidget {
               accountName: Text("Eslam Kamel"),
               accountEmail: Text("eslam@gmail.com"),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage("https://via.placeholder.com/150"),
+                backgroundImage: NetworkImage(
+                  "https://via.placeholder.com/150",
+                ),
               ),
               decoration: BoxDecoration(color: Colors.transparent),
             ),
