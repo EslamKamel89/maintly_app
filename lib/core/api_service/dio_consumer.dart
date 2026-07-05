@@ -5,6 +5,9 @@ import 'package:maintly_app/core/api_service/api_consumer.dart';
 import 'package:maintly_app/core/api_service/api_interceptors.dart';
 import 'package:maintly_app/core/api_service/check_internet.dart';
 import 'package:maintly_app/core/api_service/end_points.dart';
+import 'package:maintly_app/core/service_locator/service_locator.dart';
+import 'package:maintly_app/core/static_data/shared_prefrences_key.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DioConsumer extends ApiConsumer {
   final Dio dio;
@@ -84,6 +87,12 @@ class DioConsumer extends ApiConsumer {
   }
 
   Future<dynamic> _request(Future<Response> Function() callback) async {
+    final SharedPreferences shPref = serviceLocator<SharedPreferences>();
+
+    final token = shPref.getString(ShPrefKey.token);
+    if (token != null) {
+      dio.options.headers['Authorization'] = 'Bearer $token';
+    }
     try {
       if (!await checkInternet()) {
         throw const OfflineFailure();

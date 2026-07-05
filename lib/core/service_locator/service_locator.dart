@@ -17,11 +17,11 @@ Future initServiceLocator() async {
   serviceLocator.registerLazySingleton<ApiConsumer>(() => DioConsumer(dio: serviceLocator()));
   final prefs = await SharedPreferences.getInstance();
   serviceLocator.registerLazySingleton<SharedPreferences>(() => prefs);
+  serviceLocator.registerLazySingleton<AuthService>(() => AuthService());
   serviceLocator.registerLazySingleton<AppMiddleWare>(
     () => AppMiddleWare(sharedPreferences: serviceLocator()),
   );
   serviceLocator.registerLazySingleton<AppRouter>(() => AppRouter(appMiddleWare: serviceLocator()));
-  serviceLocator.registerLazySingleton<AuthService>(() => AuthService());
   serviceLocator.registerLazySingleton<WorkOrdersService>(() => WorkOrdersService());
   // serviceLocator.registerLazySingleton<HomeRemoteDataSource>(() => HomeRemoteDataSource(api: serviceLocator()));
   // serviceLocator.registerLazySingleton<HomeRepo>(() => HomeRepoImp(homeRemoteDataSource: serviceLocator()));
