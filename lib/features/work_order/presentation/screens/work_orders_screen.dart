@@ -16,7 +16,7 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
   @override
   Widget build(BuildContext context) {
     final user = _authService.getCachedUser();
-
+    // serviceLocator<SharedPreferences>().clear();
     return Scaffold(
       appBar: AppBar(title: const Text("Work Orders"), centerTitle: false),
       body: SafeArea(
@@ -24,18 +24,25 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
             ? const Center(child: Text("No cached user found."))
             : Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    UserHeaderCard(user: user),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      UserHeaderCard(user: user),
 
-                    const SizedBox(height: 20),
-
-                    const Expanded(
-                      child: Center(
-                        child: Text("Work Orders will appear here", style: TextStyle(fontSize: 18)),
+                      const SizedBox(height: 20),
+                      TextField(decoration: InputDecoration(hintText: 'SEARCH')),
+                      const SizedBox(height: 20),
+                      // todo: replace the ListView.builder with the actual work order fetched from the backend
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: 5,
+                        itemBuilder: (context, i) {
+                          return SizedBox(child: Text('Work Order $i'));
+                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
       ),

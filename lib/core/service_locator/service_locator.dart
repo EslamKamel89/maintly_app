@@ -6,6 +6,7 @@ import 'package:maintly_app/core/api_service/dio_consumer.dart';
 import 'package:maintly_app/core/router/app_router.dart';
 import 'package:maintly_app/core/router/middleware.dart';
 import 'package:maintly_app/features/auth/services/auth_service.dart';
+import 'package:maintly_app/features/work_order/services/work_orders_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GetIt serviceLocator = GetIt.instance;
@@ -21,7 +22,7 @@ Future initServiceLocator() async {
   );
   serviceLocator.registerLazySingleton<AppRouter>(() => AppRouter(appMiddleWare: serviceLocator()));
   serviceLocator.registerLazySingleton<AuthService>(() => AuthService());
-
+  serviceLocator.registerLazySingleton<WorkOrdersService>(() => WorkOrdersService());
   // serviceLocator.registerLazySingleton<HomeRemoteDataSource>(() => HomeRemoteDataSource(api: serviceLocator()));
   // serviceLocator.registerLazySingleton<HomeRepo>(() => HomeRepoImp(homeRemoteDataSource: serviceLocator()));
 }

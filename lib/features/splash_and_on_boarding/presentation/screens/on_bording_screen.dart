@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:maintly_app/core/extensions/context-extensions.dart';
 import 'package:maintly_app/core/router/app_routes_names.dart';
+import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/core/widgets/default_screen_padding.dart';
 import 'package:maintly_app/core/widgets/sizer.dart';
+import 'package:maintly_app/features/auth/services/auth_service.dart';
 import 'package:maintly_app/utils/assets/assets.dart';
 import 'package:maintly_app/utils/styles/styles.dart';
 
@@ -16,6 +18,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  final authService = serviceLocator<AuthService>();
 
   final List<_OnboardingItem> _pages = const [
     _OnboardingItem(
@@ -38,16 +41,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
   ];
 
-  void _next() {
+  Future<void> _next() async {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(AppRoutesNames.signinScreen, (_) => false);
+      await authService.setOnBoardingSeen();
+      if (authService.isSignedIn()) {
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+      } else {
+        Navigator.of(context).pushNamedAndRemoveUntil(AppRoutesNames.signinScreen, (_) => false);
+      }
     }
   }
 
@@ -81,8 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   onPageChanged: (value) {
                     setState(() => _currentPage = value);
                   },
-                  itemBuilder: (_, index) =>
-                      _OnboardingPage(item: _pages[index]),
+                  itemBuilder: (_, index) => _OnboardingPage(item: _pages[index]),
                 ),
               ),
               Row(
@@ -95,9 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     height: 8,
                     width: active ? 28 : 8,
                     decoration: BoxDecoration(
-                      color: active
-                          ? context.primaryColor
-                          : Colors.grey.withOpacity(.35),
+                      color: active ? context.primaryColor : Colors.grey.withOpacity(.35),
                       borderRadius: BorderRadius.circular(20),
                     ),
                   );
@@ -133,10 +136,7 @@ class _OnboardingPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(
-          height: 280,
-          child: Image.asset(item.image, fit: BoxFit.contain),
-        ),
+        SizedBox(height: 280, child: Image.asset(item.image, fit: BoxFit.contain)),
         const Sizer(height: 40),
         txt(item.title, e: St.bold25, textAlign: TextAlign.center),
         const Sizer(height: 16),
@@ -160,9 +160,5 @@ class _OnboardingItem {
   final String title;
   final String description;
 
-  const _OnboardingItem({
-    required this.image,
-    required this.title,
-    required this.description,
-  });
+  const _OnboardingItem({required this.image, required this.title, required this.description});
 }

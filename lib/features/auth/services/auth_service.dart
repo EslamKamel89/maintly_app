@@ -112,9 +112,18 @@ class AuthService extends BaseService {
   Future<void> clearSession() async {
     await shPref.remove(ShPrefKey.token);
     await shPref.remove(ShPrefKey.user);
+    await shPref.remove(ShPrefKey.onBoarding);
   }
 
   Future<void> logout() async {
     await clearSession();
+  }
+
+  Future<void> setOnBoardingSeen() async {
+    await shPref.setBool(ShPrefKey.onBoarding, true);
+  }
+
+  bool isOnBoardingSeen() {
+    return shPref.getBool(ShPrefKey.onBoarding) ?? false;
   }
 }

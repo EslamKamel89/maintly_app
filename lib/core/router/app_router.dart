@@ -13,7 +13,7 @@ class AppRouter {
   AppRouter({required this.appMiddleWare});
   Route? onGenerateRoute(RouteSettings routeSettings) {
     final args = routeSettings.arguments;
-    String? routeName = appMiddleWare.middlleware(routeSettings.name);
+    String? routeName = appMiddleWare.middleware(routeSettings.name);
     switch (routeName) {
       case AppRoutesNames.splashScreen:
         return CustomPageRoute(builder: (context) => const SplashScreen(), settings: routeSettings);

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:maintly_app/core/extensions/context-extensions.dart';
 import 'package:maintly_app/core/router/app_routes_names.dart';
+import 'package:maintly_app/core/service_locator/service_locator.dart';
+import 'package:maintly_app/features/auth/services/auth_service.dart';
 import 'package:maintly_app/utils/assets/assets.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,15 +19,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
+    final authService = serviceLocator<AuthService>();
     Future.delayed(const Duration(seconds: 4), () {
       if (!mounted) return;
-
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutesNames.onBoardingScreen,
-        (_) => false,
-      );
+      if (authService.isSignedIn()) {
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+      } else if (!authService.isOnBoardingSeen()) {
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.onBoardingScreen, (_) => false);
+      } else {
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.signinScreen, (_) => false);
+      }
     });
   }
 
@@ -122,50 +125,31 @@ class _SplashScreenState extends State<SplashScreen> {
                           )
                           .animate(delay: 400.ms)
                           .fadeIn(duration: 700.ms)
-                          .slideY(
-                            begin: .35,
-                            end: 0,
-                            curve: Curves.easeOutCubic,
-                          ),
+                          .slideY(begin: .35, end: 0, curve: Curves.easeOutCubic),
 
                       const SizedBox(height: 12),
 
                       Text(
-                            "Maintenance Management System",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade700,
-                              height: 1.5,
-                            ),
-                          )
-                          .animate(delay: 700.ms)
-                          .fadeIn(duration: 700.ms)
-                          .slideY(begin: .25),
+                        "Maintenance Management System",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, color: Colors.grey.shade700, height: 1.5),
+                      ).animate(delay: 700.ms).fadeIn(duration: 700.ms).slideY(begin: .25),
 
                       const SizedBox(height: 70),
 
                       SizedBox(
-                            width: 180,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: const LinearProgressIndicator(
-                                minHeight: 5,
-                              ),
-                            ),
-                          )
-                          .animate(delay: 1000.ms)
-                          .fadeIn(duration: 500.ms)
-                          .slideX(begin: -.3),
+                        width: 180,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: const LinearProgressIndicator(minHeight: 5),
+                        ),
+                      ).animate(delay: 1000.ms).fadeIn(duration: 500.ms).slideX(begin: -.3),
 
                       const SizedBox(height: 24),
 
                       Text(
                         "Version 1.0",
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          letterSpacing: 1,
-                        ),
+                        style: TextStyle(color: Colors.grey.shade500, letterSpacing: 1),
                       ).animate(delay: 1500.ms).fadeIn(duration: 600.ms),
                     ],
                   ),
