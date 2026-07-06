@@ -5,6 +5,7 @@ import 'package:maintly_app/core/heleprs/print_helper.dart';
 import 'package:maintly_app/core/models/api_response_model.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/core/services/base_service.dart';
+import 'package:maintly_app/features/work_order/models/work_order_detailed/work_order_detailed.dart';
 import 'package:maintly_app/features/work_order/models/work_order_model/work_order_model.dart';
 
 class WorkOrdersService extends BaseService {
@@ -30,7 +31,7 @@ class WorkOrdersService extends BaseService {
     }
   }
 
-  Future<ApiResponseModel<WorkOrderModel>> getWorkOrder(int workOrderId) async {
+  Future<ApiResponseModel<WorkOrderDetailed>> getWorkOrder(int workOrderId) async {
     const t = 'getWorkOrder - WorkOrdersService';
 
     try {
@@ -38,11 +39,11 @@ class WorkOrdersService extends BaseService {
 
       pr(raw, '$t - raw response');
 
-      final WorkOrderModel workOrder = WorkOrderModel.fromJson(raw);
+      final WorkOrderDetailed workOrder = WorkOrderDetailed.fromJson(raw);
 
       return ApiResponseModel(response: ResponseEnum.success, data: workOrder);
     } catch (e) {
-      return apiExceptionHandler<WorkOrderModel>(e);
+      return apiExceptionHandler<WorkOrderDetailed>(e);
     }
   }
 }

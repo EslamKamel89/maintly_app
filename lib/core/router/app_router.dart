@@ -6,6 +6,7 @@ import 'package:maintly_app/features/auth/presentation/screens/sign_in_screen.da
 import 'package:maintly_app/features/auth/presentation/screens/signup_screen.dart';
 import 'package:maintly_app/features/splash_and_on_boarding/presentation/screens/on_bording_screen.dart';
 import 'package:maintly_app/features/splash_and_on_boarding/presentation/screens/splash_screen.dart';
+import 'package:maintly_app/features/work_order/presentation/screens/work_order_screen.dart';
 import 'package:maintly_app/features/work_order/presentation/screens/work_orders_screen.dart';
 
 class AppRouter {
@@ -29,14 +30,20 @@ class AppRouter {
         );
       case AppRoutesNames.signinScreen:
         return CustomPageRoute(builder: (context) => const SignInScreen(), settings: routeSettings);
-      case AppRoutesNames.workOrderScreen:
-        return CustomPageRoute(
-          builder: (context) => const WorkOrderScreen(),
-          settings: routeSettings,
-        );
+
       case AppRoutesNames.signupScreen:
         return CustomPageRoute(builder: (context) => const SignUpScreen(), settings: routeSettings);
-
+      case AppRoutesNames.workOrdersScreen:
+        return CustomPageRoute(
+          builder: (context) => const WorkOrdersScreen(),
+          settings: routeSettings,
+        );
+      case AppRoutesNames.workOrderScreen:
+        return CustomPageRoute(
+          builder: (context) =>
+              WorkOrderScreen(workOrderId: (args as Map<String, dynamic>)['workOrderId']),
+          settings: routeSettings,
+        );
       default:
         return null;
     }

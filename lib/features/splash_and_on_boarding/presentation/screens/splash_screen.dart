@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 4), () {
       if (!mounted) return;
       if (authService.isSignedIn()) {
-        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrdersScreen, (_) => false);
       } else if (!authService.isOnBoardingSeen()) {
         Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.onBoardingScreen, (_) => false);
       } else {

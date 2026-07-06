@@ -69,7 +69,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (result.response == ResponseEnum.success) {
       showSnackbar("Success", "Account created successfully.", false);
 
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrdersScreen, (_) => false);
     }
   }
 

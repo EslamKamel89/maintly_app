@@ -60,7 +60,7 @@ class _SignInScreenState extends State<SignInScreen> {
     if (result.response == ResponseEnum.success) {
       showSnackbar("Success", "Signed in successfully.", false);
 
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrdersScreen, (_) => false);
 
       return;
     }

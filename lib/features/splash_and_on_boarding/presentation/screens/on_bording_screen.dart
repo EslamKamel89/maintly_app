@@ -50,7 +50,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     } else {
       await authService.setOnBoardingSeen();
       if (authService.isSignedIn()) {
-        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrderScreen, (_) => false);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrdersScreen, (_) => false);
       } else {
         Navigator.of(context).pushNamedAndRemoveUntil(AppRoutesNames.signinScreen, (_) => false);
       }

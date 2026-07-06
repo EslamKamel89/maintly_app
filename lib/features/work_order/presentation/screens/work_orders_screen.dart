@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maintly_app/core/enums/api_status.dart';
+import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/features/auth/models/response/user.dart';
 import 'package:maintly_app/features/auth/services/auth_service.dart';
@@ -12,8 +13,8 @@ import 'package:maintly_app/features/work_order/presentation/widgets/work_order_
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order_search_bar.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order_status_filter.dart';
 
-class WorkOrderScreen extends StatelessWidget {
-  const WorkOrderScreen({super.key});
+class WorkOrdersScreen extends StatelessWidget {
+  const WorkOrdersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -145,8 +146,10 @@ class _WorkOrderViewState extends State<_WorkOrderView> {
                     child: WorkOrderCard(
                       workOrder: workOrder,
                       onTap: () {
-                        // TODO:
-                        // Navigate to Work Order Details
+                        Navigator.of(context).pushNamed(
+                          AppRoutesNames.workOrderScreen,
+                          arguments: {'workOrderId': workOrder.id},
+                        );
                       },
                     ).animate(delay: (index * 60).ms).fadeIn().slideY(begin: .15),
                   );
