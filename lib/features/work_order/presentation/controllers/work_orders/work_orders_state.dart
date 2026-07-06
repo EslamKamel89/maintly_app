@@ -5,7 +5,7 @@ import 'package:maintly_app/core/enums/api_status.dart';
 import 'package:maintly_app/features/work_order/enums/work_order_filter_status.dart';
 import 'package:maintly_app/features/work_order/models/work_order_model/work_order_model.dart';
 
-class WorkOrderState extends Equatable {
+class WorkOrdersState extends Equatable {
   final ApiStatus status;
 
   final List<WorkOrderModel> allWorkOrders;
@@ -17,7 +17,7 @@ class WorkOrderState extends Equatable {
   final WorkOrderFilterStatus selectedStatus;
 
   final String? errorMessage;
-  const WorkOrderState({
+  const WorkOrdersState({
     required this.status,
     required this.allWorkOrders,
     required this.visibleWorkOrders,
@@ -26,7 +26,7 @@ class WorkOrderState extends Equatable {
     this.errorMessage,
   });
 
-  WorkOrderState copyWith({
+  WorkOrdersState copyWith({
     ApiStatus? status,
     List<WorkOrderModel>? allWorkOrders,
     List<WorkOrderModel>? visibleWorkOrders,
@@ -34,7 +34,7 @@ class WorkOrderState extends Equatable {
     WorkOrderFilterStatus? selectedStatus,
     String? errorMessage,
   }) {
-    return WorkOrderState(
+    return WorkOrdersState(
       status: status ?? this.status,
       allWorkOrders: allWorkOrders ?? this.allWorkOrders,
       visibleWorkOrders: visibleWorkOrders ?? this.visibleWorkOrders,

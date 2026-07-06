@@ -29,4 +29,20 @@ class WorkOrdersService extends BaseService {
       return apiExceptionHandler<List<WorkOrderModel>>(e);
     }
   }
+
+  Future<ApiResponseModel<WorkOrderModel>> getWorkOrder(int workOrderId) async {
+    const t = 'getWorkOrder - WorkOrdersService';
+
+    try {
+      final raw = await api.get("${EndPoint.workOrdersEndpoint}/$workOrderId");
+
+      pr(raw, '$t - raw response');
+
+      final WorkOrderModel workOrder = WorkOrderModel.fromJson(raw);
+
+      return ApiResponseModel(response: ResponseEnum.success, data: workOrder);
+    } catch (e) {
+      return apiExceptionHandler<WorkOrderModel>(e);
+    }
+  }
 }

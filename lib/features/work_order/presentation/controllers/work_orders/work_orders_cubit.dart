@@ -4,14 +4,14 @@ import 'package:maintly_app/core/enums/response_type.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/features/work_order/enums/work_order_filter_status.dart';
 import 'package:maintly_app/features/work_order/models/work_order_model/work_order_model.dart';
-import 'package:maintly_app/features/work_order/presentation/controllers/work_order_state.dart';
+import 'package:maintly_app/features/work_order/presentation/controllers/work_orders/work_orders_state.dart';
 import 'package:maintly_app/features/work_order/services/work_orders_service.dart';
 
-class WorkOrderCubit extends Cubit<WorkOrderState> {
-  WorkOrderCubit()
+class WorkOrdersCubit extends Cubit<WorkOrdersState> {
+  WorkOrdersCubit()
     : _service = serviceLocator<WorkOrdersService>(),
       super(
-        const WorkOrderState(
+        const WorkOrdersState(
           status: ApiStatus.initial,
           allWorkOrders: [],
           visibleWorkOrders: [],

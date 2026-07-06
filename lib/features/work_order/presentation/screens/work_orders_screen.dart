@@ -5,8 +5,8 @@ import 'package:maintly_app/core/enums/api_status.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/features/auth/models/response/user.dart';
 import 'package:maintly_app/features/auth/services/auth_service.dart';
-import 'package:maintly_app/features/work_order/presentation/controllers/work_order_cubit.dart';
-import 'package:maintly_app/features/work_order/presentation/controllers/work_order_state.dart';
+import 'package:maintly_app/features/work_order/presentation/controllers/work_orders/work_orders_cubit.dart';
+import 'package:maintly_app/features/work_order/presentation/controllers/work_orders/work_orders_state.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/user_header_card.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order_card.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order_search_bar.dart';
@@ -24,7 +24,7 @@ class WorkOrderScreen extends StatelessWidget {
     }
 
     return BlocProvider(
-      create: (_) => WorkOrderCubit()..load(),
+      create: (_) => WorkOrdersCubit()..load(),
       child: _WorkOrderView(user: user),
     );
   }
@@ -42,7 +42,7 @@ class _WorkOrderView extends StatefulWidget {
 class _WorkOrderViewState extends State<_WorkOrderView> {
   final TextEditingController _searchController = TextEditingController();
 
-  WorkOrderCubit get cubit => context.read<WorkOrderCubit>();
+  WorkOrdersCubit get cubit => context.read<WorkOrdersCubit>();
 
   @override
   void dispose() {
@@ -58,7 +58,7 @@ class _WorkOrderViewState extends State<_WorkOrderView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Work Orders'), centerTitle: false),
-      body: BlocBuilder<WorkOrderCubit, WorkOrderState>(
+      body: BlocBuilder<WorkOrdersCubit, WorkOrdersState>(
         builder: (context, state) {
           if (state.status == ApiStatus.loading) {
             return const Center(child: CircularProgressIndicator());
