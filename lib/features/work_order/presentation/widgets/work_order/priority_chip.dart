@@ -43,21 +43,21 @@ class PriorityChip extends StatelessWidget {
       case 'low':
         return const _PriorityStyle(
           label: 'Low',
-          color: Colors.green,
+          color: Colors.grey,
           icon: Icons.keyboard_double_arrow_down_rounded,
         );
 
       case 'medium':
         return const _PriorityStyle(
           label: 'Medium',
-          color: Colors.orange,
+          color: Colors.blue,
           icon: Icons.remove_rounded,
         );
 
       case 'high':
         return const _PriorityStyle(
           label: 'High',
-          color: Colors.deepOrange,
+          color: Colors.orange,
           icon: Icons.keyboard_double_arrow_up_rounded,
         );
 
