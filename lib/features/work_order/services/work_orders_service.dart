@@ -46,4 +46,24 @@ class WorkOrdersService extends BaseService {
       return apiExceptionHandler<WorkOrderDetailed>(e);
     }
   }
+
+  Future<ApiResponseModel<void>> createComment({
+    required int workOrderId,
+    required String comment,
+  }) async {
+    const t = 'createComment - WorkOrdersService';
+
+    try {
+      await api.post(
+        EndPoint.commentsEndpoint,
+        data: {'work_order_id': workOrderId, 'comment': comment},
+      );
+
+      pr(null, '$t - success');
+
+      return ApiResponseModel<void>(response: ResponseEnum.success);
+    } catch (e) {
+      return apiExceptionHandler<void>(e);
+    }
+  }
 }

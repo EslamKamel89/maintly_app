@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maintly_app/core/enums/response_type.dart';
+import 'package:maintly_app/core/heleprs/validator.dart';
+import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/features/work_order/models/work_order_detailed/work_order_detailed.dart';
+import 'package:maintly_app/features/work_order/presentation/controllers/work_order/work_order_cubit.dart';
+import 'package:maintly_app/features/work_order/services/work_orders_service.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/attachments_tab.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/audit_tab.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/comments_tab.dart';
@@ -9,12 +15,12 @@ import 'package:maintly_app/features/work_order/presentation/widgets/work_order/
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/scheduling_tab.dart';
 
 const _kTabColors = [
-  Color(0xFF4F46E5), // General   – indigo
-  Color(0xFF0891B2), // Resources – cyan
-  Color(0xFFEA580C), // Scheduling– orange
-  Color(0xFF7C3AED), // Audit     – violet
+  Color(0xFF4F46E5), // General     – indigo
+  Color(0xFF0891B2), // Resources   – cyan
+  Color(0xFFEA580C), // Scheduling  – orange
+  Color(0xFF7C3AED), // Audit       – violet
   Color(0xFFDB2777), // Attachments – pink
-  Color(0xFF16A34A), // Comments  – green
+  Color(0xFF16A34A), // Comments    – green
 ];
 
 const _kTabLabels = [
@@ -35,7 +41,7 @@ const _kTabIcons = [
   Icons.chat_bubble_outline_rounded,
 ];
 
-class WorkOrderTabs extends StatelessWidget {
+class WorkOrderTabs extends StatefulWidget {
   const WorkOrderTabs({
     super.key,
     required this.workOrder,
@@ -48,36 +54,167 @@ class WorkOrderTabs extends StatelessWidget {
   final Future<void> Function() onRefresh;
 
   @override
+  State<WorkOrderTabs> createState() => _WorkOrderTabsState();
+}
+
+class _WorkOrderTabsState extends State<WorkOrderTabs> {
+  bool _isOpen = false;
+
+  void _toggle() => setState(() => _isOpen = !_isOpen);
+  void _close() {
+    if (_isOpen) setState(() => _isOpen = false);
+  }
+
+  void _showAttachFilesSheet() => showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (_) => const _AttachFilesSheet(),
+      );
+
+  void _showAddCommentSheet() {
+    final cubit = context.read<WorkOrderCubit>();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _AddCommentSheet(
+        workOrderId: widget.workOrder.id!,
+        cubit: cubit,
+      ),
+    );
+  }
+
+  void _showCompleteSheet() => showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (_) => const _CompleteWorkOrderSheet(),
+      );
+
+  @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return DefaultTabController(
       length: _kTabLabels.length,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            workOrder.title ?? 'Work Order',
+            widget.workOrder.title ?? 'Work Order',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           centerTitle: false,
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(isRefreshing ? 60.0 : 56.0),
-            child: _ColoredTabBar(isRefreshing: isRefreshing),
+            preferredSize: Size.fromHeight(widget.isRefreshing ? 60.0 : 56.0),
+            child: _ColoredTabBar(isRefreshing: widget.isRefreshing),
           ),
         ),
-        body: TabBarView(
+        floatingActionButton: FloatingActionButton(
+          onPressed: _toggle,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            transitionBuilder: (child, animation) => RotationTransition(
+              turns: animation,
+              child: FadeTransition(opacity: animation, child: child),
+            ),
+            child: Icon(
+              _isOpen ? Icons.close : Icons.more_vert,
+              key: ValueKey(_isOpen),
+            ),
+          ),
+        ),
+        body: Stack(
           children: [
-            GeneralTab(workOrder: workOrder, onRefresh: onRefresh),
-            ResourcesTab(workOrder: workOrder, onRefresh: onRefresh),
-            SchedulingTab(workOrder: workOrder, onRefresh: onRefresh),
-            AuditTab(workOrder: workOrder, onRefresh: onRefresh),
-            AttachmentsTab(workOrder: workOrder, onRefresh: onRefresh),
-            CommentsTab(workOrder: workOrder, onRefresh: onRefresh),
+            // layer 0: tab content
+            TabBarView(
+              children: [
+                GeneralTab(workOrder: widget.workOrder, onRefresh: widget.onRefresh),
+                ResourcesTab(workOrder: widget.workOrder, onRefresh: widget.onRefresh),
+                SchedulingTab(workOrder: widget.workOrder, onRefresh: widget.onRefresh),
+                AuditTab(workOrder: widget.workOrder, onRefresh: widget.onRefresh),
+                AttachmentsTab(workOrder: widget.workOrder, onRefresh: widget.onRefresh),
+                CommentsTab(workOrder: widget.workOrder, onRefresh: widget.onRefresh),
+              ],
+            ),
+
+            // layer 1: dim overlay
+            if (_isOpen)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: _close,
+                  child: Container(
+                    color: Colors.black.withValues(alpha: 0.18),
+                  ),
+                ),
+              ),
+
+            // layer 2: action items
+            if (_isOpen)
+              Positioned(
+                right: 16,
+                // 16 (FAB bottom) + 56 (FAB height) + 12 (gap)
+                bottom: 84,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _ActionMenuItem(
+                      icon: Icons.attach_file,
+                      label: 'Attach Files',
+                      color: primary,
+                      onTap: () {
+                        _close();
+                        _showAttachFilesSheet();
+                      },
+                      delay: Duration.zero,
+                    ),
+                    const SizedBox(height: 10),
+                    _ActionMenuItem(
+                      icon: Icons.chat_bubble_outline,
+                      label: 'Add Comment',
+                      color: primary,
+                      onTap: () {
+                        _close();
+                        _showAddCommentSheet();
+                      },
+                      delay: const Duration(milliseconds: 50),
+                    ),
+                    const SizedBox(height: 10),
+                    _ActionMenuItem(
+                      icon: Icons.check_circle_outline,
+                      label: 'Mark Job as Completed',
+                      color: Colors.green,
+                      onTap: () {
+                        _close();
+                        _showCompleteSheet();
+                      },
+                      delay: const Duration(milliseconds: 100),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
     ).animate().fadeIn(duration: 400.ms);
   }
 }
+
+// ── Colored tab bar ────────────────────────────────────────────────────────
 
 class _ColoredTabBar extends StatelessWidget {
   const _ColoredTabBar({required this.isRefreshing});
@@ -154,6 +291,221 @@ class _ColoredTabBar extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+// ── Action menu item ───────────────────────────────────────────────────────
+
+class _ActionMenuItem extends StatelessWidget {
+  const _ActionMenuItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+    this.delay = Duration.zero,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  final Duration delay;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
+    return Material(
+      color: Colors.white,
+      elevation: 3,
+      shadowColor: Colors.black.withValues(alpha: 0.15),
+      borderRadius: BorderRadius.circular(50),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(50),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: onSurface,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    )
+        .animate(delay: delay)
+        .fadeIn(duration: 200.ms)
+        .slideY(begin: 0.3, curve: Curves.easeOutCubic);
+  }
+}
+
+// ── Bottom sheets (stubs) ──────────────────────────────────────────────────
+
+class _AttachFilesSheet extends StatelessWidget {
+  const _AttachFilesSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Attach Files',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const Divider(height: 24),
+          Center(
+            child: Text(
+              'TODO: Attach files UI',
+              style: TextStyle(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+                color: Colors.grey.shade400,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddCommentSheet extends StatefulWidget {
+  const _AddCommentSheet({required this.workOrderId, required this.cubit});
+
+  final int workOrderId;
+  final WorkOrderCubit cubit;
+
+  @override
+  State<_AddCommentSheet> createState() => _AddCommentSheetState();
+}
+
+class _AddCommentSheetState extends State<_AddCommentSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _controller = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
+    final result = await serviceLocator<WorkOrdersService>().createComment(
+      workOrderId: widget.workOrderId,
+      comment: _controller.text.trim(),
+    );
+    if (!mounted) return;
+    if (result.response == ResponseEnum.success) {
+      FocusScope.of(context).unfocus();
+      Navigator.of(context).pop();
+      widget.cubit.refresh(widget.workOrderId);
+    } else {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          24, 8, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Add Comment',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const Divider(height: 24),
+            TextFormField(
+              controller: _controller,
+              enabled: !_isLoading,
+              maxLines: 5,
+              minLines: 3,
+              textInputAction: TextInputAction.newline,
+              decoration: const InputDecoration(
+                hintText: 'Write your comment here…',
+                border: OutlineInputBorder(),
+                alignLabelWithHint: true,
+              ),
+              validator: (v) => valdiator(
+                input: v,
+                label: 'Comment',
+                isRequired: true,
+                minChars: 3,
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _isLoading ? null : _submit,
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text('Submit'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CompleteWorkOrderSheet extends StatelessWidget {
+  const _CompleteWorkOrderSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Complete Work Order',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const Divider(height: 24),
+          Center(
+            child: Text(
+              'TODO: Completion workflow',
+              style: TextStyle(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+                color: Colors.grey.shade400,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
