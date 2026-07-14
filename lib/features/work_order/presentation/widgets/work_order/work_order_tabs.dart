@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maintly_app/core/enums/response_type.dart';
@@ -65,16 +68,22 @@ class _WorkOrderTabsState extends State<WorkOrderTabs> {
     if (_isOpen) setState(() => _isOpen = false);
   }
 
-  void _showAttachFilesSheet() => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        showDragHandle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        builder: (_) => const _AttachFilesSheet(),
-      );
+  void _showAttachFilesSheet() {
+    final cubit = context.read<WorkOrderCubit>();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _AttachFilesSheet(
+        workOrderId: widget.workOrder.id!,
+        cubit: cubit,
+      ),
+    );
+  }
 
   void _showAddCommentSheet() {
     final cubit = context.read<WorkOrderCubit>();
@@ -352,13 +361,90 @@ class _ActionMenuItem extends StatelessWidget {
 
 // ── Bottom sheets (stubs) ──────────────────────────────────────────────────
 
-class _AttachFilesSheet extends StatelessWidget {
-  const _AttachFilesSheet();
+class _AttachFilesSheet extends StatefulWidget {
+  const _AttachFilesSheet({required this.workOrderId, required this.cubit});
+
+  final int workOrderId;
+  final WorkOrderCubit cubit;
+
+  @override
+  State<_AttachFilesSheet> createState() => _AttachFilesSheetState();
+}
+
+class _AttachFilesSheetState extends State<_AttachFilesSheet> {
+  final _notesController = TextEditingController();
+  XFile? _image;
+  String? _type;
+  bool _isLoading = false;
+
+  static const _typeValues = ['before', 'after', 'general'];
+  static const _typeLabels = ['Before', 'After', 'General'];
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(source: source, imageQuality: 85);
+    if (picked != null) setState(() => _image = picked);
+  }
+
+  void _showSourcePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Camera'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Gallery'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _upload() async {
+    if (_image == null || _type == null) return;
+    setState(() => _isLoading = true);
+    final notes = _notesController.text.trim();
+    final result = await serviceLocator<WorkOrdersService>().uploadAttachment(
+      workOrderId: widget.workOrderId,
+      type: _type!,
+      image: _image!,
+      notes: notes.isEmpty ? null : notes,
+    );
+    if (!mounted) return;
+    if (result.response == ResponseEnum.success) {
+      Navigator.of(context).pop();
+      widget.cubit.refresh(widget.workOrderId);
+    } else {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+    final canUpload = _image != null && _type != null && !_isLoading;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(24, 8, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,14 +454,103 @@ class _AttachFilesSheet extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const Divider(height: 24),
-          Center(
-            child: Text(
-              'TODO: Attach files UI',
-              style: TextStyle(
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-                color: Colors.grey.shade400,
+
+          // Image picker / preview area
+          GestureDetector(
+            onTap: _isLoading ? null : _showSourcePicker,
+            child: Container(
+              height: _image == null ? 140 : null,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
+              clipBehavior: Clip.antiAlias,
+              child: _image == null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_photo_alternate_outlined,
+                            size: 40, color: Colors.grey.shade400),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tap to select image',
+                          style: TextStyle(color: Colors.grey.shade500),
+                        ),
+                      ],
+                    )
+                  : Stack(
+                      children: [
+                        Image.file(
+                          File(_image!.path),
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Material(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(20),
+                            child: InkWell(
+                              onTap: _isLoading ? null : _showSourcePicker,
+                              borderRadius: BorderRadius.circular(20),
+                              child: const Padding(
+                                padding: EdgeInsets.all(6),
+                                child: Icon(Icons.edit, color: Colors.white, size: 18),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Type dropdown
+          DropdownButtonFormField<String>(
+            initialValue: _type,
+            decoration: const InputDecoration(
+              labelText: 'Attachment Type',
+              border: OutlineInputBorder(),
+            ),
+            items: List.generate(
+              _typeValues.length,
+              (i) => DropdownMenuItem(value: _typeValues[i], child: Text(_typeLabels[i])),
+            ),
+            onChanged: _isLoading ? null : (v) => setState(() => _type = v),
+          ),
+          const SizedBox(height: 12),
+
+          // Notes (optional)
+          TextFormField(
+            controller: _notesController,
+            enabled: !_isLoading,
+            maxLines: 2,
+            minLines: 1,
+            decoration: const InputDecoration(
+              labelText: 'Notes (optional)',
+              hintText: 'Add a note about this attachment…',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: canUpload ? _upload : null,
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.upload_rounded),
+              label: const Text('Upload'),
             ),
           ),
         ],

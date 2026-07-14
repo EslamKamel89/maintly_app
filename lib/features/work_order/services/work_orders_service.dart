@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart' show MultipartFile;
+import 'package:image_picker/image_picker.dart' show XFile;
 import 'package:maintly_app/core/api_service/api_consumer.dart';
 import 'package:maintly_app/core/api_service/end_points.dart';
 import 'package:maintly_app/core/enums/response_type.dart';
@@ -44,6 +46,38 @@ class WorkOrdersService extends BaseService {
       return ApiResponseModel(response: ResponseEnum.success, data: workOrder);
     } catch (e) {
       return apiExceptionHandler<WorkOrderDetailed>(e);
+    }
+  }
+
+  Future<ApiResponseModel<void>> uploadAttachment({
+    required int workOrderId,
+    required String type,
+    required XFile image,
+    String? notes,
+  }) async {
+    const t = 'uploadAttachment - WorkOrdersService';
+
+    try {
+      final file = await MultipartFile.fromFile(
+        image.path,
+        filename: image.name,
+      );
+      await api.post(
+        EndPoint.attachmentsEndpoint,
+        data: {
+          'work_order_id': workOrderId,
+          'type': type,
+          'attachment': file,
+          if (notes != null && notes.isNotEmpty) 'notes': notes,
+        },
+        isFormData: true,
+      );
+
+      pr(null, '$t - success');
+
+      return ApiResponseModel<void>(response: ResponseEnum.success);
+    } catch (e) {
+      return apiExceptionHandler<void>(e);
     }
   }
 
