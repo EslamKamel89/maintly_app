@@ -1,21 +1,21 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:maintly_app/core/enums/response_type.dart';
 import 'package:maintly_app/core/heleprs/validator.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/features/work_order/models/work_order_detailed/work_order_detailed.dart';
 import 'package:maintly_app/features/work_order/presentation/controllers/work_order/work_order_cubit.dart';
-import 'package:maintly_app/features/work_order/services/work_orders_service.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/attachments_tab.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/audit_tab.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/comments_tab.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/general_tab.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/resources_tab.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/work_order/tabs/scheduling_tab.dart';
+import 'package:maintly_app/features/work_order/services/work_orders_service.dart';
 
 const _kTabColors = [
   Color(0xFF4F46E5), // General     – indigo
@@ -26,14 +26,7 @@ const _kTabColors = [
   Color(0xFF16A34A), // Comments    – green
 ];
 
-const _kTabLabels = [
-  'General',
-  'Resources',
-  'Scheduling',
-  'Audit',
-  'Attachments',
-  'Comments',
-];
+const _kTabLabels = ['General', 'Resources', 'Scheduling', 'Audit', 'Attachments', 'Comments'];
 
 const _kTabIcons = [
   Icons.info_outline_rounded,
@@ -78,10 +71,7 @@ class _WorkOrderTabsState extends State<WorkOrderTabs> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => _AttachFilesSheet(
-        workOrderId: widget.workOrder.id!,
-        cubit: cubit,
-      ),
+      builder: (_) => _AttachFilesSheet(workOrderId: widget.workOrder.id!, cubit: cubit),
     );
   }
 
@@ -95,23 +85,24 @@ class _WorkOrderTabsState extends State<WorkOrderTabs> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => _AddCommentSheet(
-        workOrderId: widget.workOrder.id!,
-        cubit: cubit,
-      ),
+      builder: (_) => _AddCommentSheet(workOrderId: widget.workOrder.id!, cubit: cubit),
     );
   }
 
-  void _showCompleteSheet() => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        showDragHandle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        builder: (_) => const _CompleteWorkOrderSheet(),
-      );
+  void _showCompleteSheet() {
+    final cubit = context.read<WorkOrderCubit>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _CompleteWorkOrderSheet(workOrderId: widget.workOrder.id!, cubit: cubit),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,10 +131,7 @@ class _WorkOrderTabsState extends State<WorkOrderTabs> {
               turns: animation,
               child: FadeTransition(opacity: animation, child: child),
             ),
-            child: Icon(
-              _isOpen ? Icons.close : Icons.more_vert,
-              key: ValueKey(_isOpen),
-            ),
+            child: Icon(_isOpen ? Icons.close : Icons.more_vert, key: ValueKey(_isOpen)),
           ),
         ),
         body: Stack(
@@ -165,9 +153,7 @@ class _WorkOrderTabsState extends State<WorkOrderTabs> {
               Positioned.fill(
                 child: GestureDetector(
                   onTap: _close,
-                  child: Container(
-                    color: Colors.black.withValues(alpha: 0.18),
-                  ),
+                  child: Container(color: Colors.black.withValues(alpha: 0.18)),
                 ),
               ),
 
@@ -202,17 +188,20 @@ class _WorkOrderTabsState extends State<WorkOrderTabs> {
                       },
                       delay: const Duration(milliseconds: 50),
                     ),
-                    const SizedBox(height: 10),
-                    _ActionMenuItem(
-                      icon: Icons.check_circle_outline,
-                      label: 'Mark Job as Completed',
-                      color: Colors.green,
-                      onTap: () {
-                        _close();
-                        _showCompleteSheet();
-                      },
-                      delay: const Duration(milliseconds: 100),
-                    ),
+                    if ((widget.workOrder.status ?? '').toLowerCase() != 'completed') ...[
+                      const SizedBox(height: 10),
+
+                      _ActionMenuItem(
+                        icon: Icons.check_circle_outline,
+                        label: 'Mark Job as Completed',
+                        color: Colors.green,
+                        onTap: () {
+                          _close();
+                          _showCompleteSheet();
+                        },
+                        delay: const Duration(milliseconds: 100),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -342,20 +331,13 @@ class _ActionMenuItem extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: onSurface,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: onSurface),
               ),
             ],
           ),
         ),
       ),
-    )
-        .animate(delay: delay)
-        .fadeIn(duration: 200.ms)
-        .slideY(begin: 0.3, curve: Curves.easeOutCubic);
+    ).animate(delay: delay).fadeIn(duration: 200.ms).slideY(begin: 0.3, curve: Curves.easeOutCubic);
   }
 }
 
@@ -449,10 +431,7 @@ class _AttachFilesSheetState extends State<_AttachFilesSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Attach Files',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+          const Text('Attach Files', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const Divider(height: 24),
 
           // Image picker / preview area
@@ -471,13 +450,13 @@ class _AttachFilesSheetState extends State<_AttachFilesSheet> {
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_photo_alternate_outlined,
-                            size: 40, color: Colors.grey.shade400),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Tap to select image',
-                          style: TextStyle(color: Colors.grey.shade500),
+                        Icon(
+                          Icons.add_photo_alternate_outlined,
+                          size: 40,
+                          color: Colors.grey.shade400,
                         ),
+                        const SizedBox(height: 8),
+                        Text('Tap to select image', style: TextStyle(color: Colors.grey.shade500)),
                       ],
                     )
                   : Stack(
@@ -600,18 +579,14 @@ class _AddCommentSheetState extends State<_AddCommentSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-          24, 8, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
+      padding: EdgeInsets.fromLTRB(24, 8, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
       child: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Add Comment',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            const Text('Add Comment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const Divider(height: 24),
             TextFormField(
               controller: _controller,
@@ -624,12 +599,8 @@ class _AddCommentSheetState extends State<_AddCommentSheet> {
                 border: OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
-              validator: (v) => valdiator(
-                input: v,
-                label: 'Comment',
-                isRequired: true,
-                minChars: 3,
-              ),
+              validator: (v) =>
+                  valdiator(input: v, label: 'Comment', isRequired: true, minChars: 3),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -640,8 +611,7 @@ class _AddCommentSheetState extends State<_AddCommentSheet> {
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : const Text('Submit'),
               ),
@@ -653,31 +623,99 @@ class _AddCommentSheetState extends State<_AddCommentSheet> {
   }
 }
 
-class _CompleteWorkOrderSheet extends StatelessWidget {
-  const _CompleteWorkOrderSheet();
+class _CompleteWorkOrderSheet extends StatefulWidget {
+  const _CompleteWorkOrderSheet({required this.workOrderId, required this.cubit});
+
+  final int workOrderId;
+  final WorkOrderCubit cubit;
+
+  @override
+  State<_CompleteWorkOrderSheet> createState() => _CompleteWorkOrderSheetState();
+}
+
+class _CompleteWorkOrderSheetState extends State<_CompleteWorkOrderSheet> {
+  bool _isLoading = false;
+
+  Future<void> _complete() async {
+    setState(() => _isLoading = true);
+
+    final result = await serviceLocator<WorkOrdersService>().completeWorkOrder(widget.workOrderId);
+
+    if (!mounted) return;
+
+    if (result.response == ResponseEnum.success) {
+      Navigator.of(context).pop();
+
+      widget.cubit.refresh(widget.workOrderId);
+
+      return;
+    }
+
+    setState(() => _isLoading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+      padding: EdgeInsets.fromLTRB(24, 8, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Complete Work Order',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const Divider(height: 24),
-          Center(
-            child: Text(
-              'TODO: Completion workflow',
-              style: TextStyle(
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-                color: Colors.grey.shade400,
+          const Row(
+            children: [
+              Icon(Icons.check_circle_outline_rounded, color: Colors.green, size: 28),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Complete Work Order',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
+            ],
+          ),
+
+          const Divider(height: 24),
+
+          const Text(
+            'This will mark the work order as completed and record the completion time.',
+            style: TextStyle(height: 1.5),
+          ),
+
+          const SizedBox(height: 12),
+
+          Text(
+            'This action cannot be undone.',
+            style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.w600),
+          ),
+
+          const SizedBox(height: 28),
+
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _isLoading ? null : _complete,
+                  icon: _isLoading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Icon(Icons.check_circle),
+                  label: const Text('Complete'),
+                ),
+              ),
+            ],
           ),
         ],
       ),

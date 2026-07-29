@@ -57,6 +57,7 @@ class _WorkOrderViewState extends State<_WorkOrderView> {
 
   @override
   Widget build(BuildContext context) {
+    // serviceLocator<SharedPreferences>().clear();
     return Scaffold(
       appBar: AppBar(title: const Text('Work Orders'), centerTitle: false),
       body: BlocBuilder<WorkOrdersCubit, WorkOrdersState>(

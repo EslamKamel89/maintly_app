@@ -58,10 +58,7 @@ class WorkOrdersService extends BaseService {
     const t = 'uploadAttachment - WorkOrdersService';
 
     try {
-      final file = await MultipartFile.fromFile(
-        image.path,
-        filename: image.name,
-      );
+      final file = await MultipartFile.fromFile(image.path, filename: image.name);
       await api.post(
         EndPoint.attachmentsEndpoint,
         data: {
@@ -94,6 +91,19 @@ class WorkOrdersService extends BaseService {
       );
 
       pr(null, '$t - success');
+
+      return ApiResponseModel<void>(response: ResponseEnum.success);
+    } catch (e) {
+      return apiExceptionHandler<void>(e);
+    }
+  }
+
+  Future<ApiResponseModel<void>> completeWorkOrder(int workOrderId) async {
+    const t = 'completeWorkOrder - WorkOrdersService';
+    try {
+      final res = await api.post(EndPoint.completeWorkOrderEndpoint(workOrderId));
+
+      pr(res, '$t - success');
 
       return ApiResponseModel<void>(response: ResponseEnum.success);
     } catch (e) {
