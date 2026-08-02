@@ -4,6 +4,8 @@ import 'package:maintly_app/core/router/middleware.dart';
 import 'package:maintly_app/core/widgets/ui_components_screen.dart';
 import 'package:maintly_app/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:maintly_app/features/auth/presentation/screens/signup_screen.dart';
+import 'package:maintly_app/features/location/enums/location_permission_status.dart';
+import 'package:maintly_app/features/location/pages/location_permission_required_page.dart';
 import 'package:maintly_app/features/splash_and_on_boarding/presentation/screens/on_bording_screen.dart';
 import 'package:maintly_app/features/splash_and_on_boarding/presentation/screens/splash_screen.dart';
 import 'package:maintly_app/features/work_order/presentation/screens/work_order_screen.dart';
@@ -42,6 +44,12 @@ class AppRouter {
         return CustomPageRoute(
           builder: (context) =>
               WorkOrderScreen(workOrderId: (args as Map<String, dynamic>)['workOrderId']),
+          settings: routeSettings,
+        );
+      case AppRoutesNames.locationPermissionRequired:
+        return CustomPageRoute(
+          builder: (context) =>
+              LocationPermissionRequiredPage(status: args as LocationPermissionStatus),
           settings: routeSettings,
         );
       default:

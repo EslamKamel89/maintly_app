@@ -5,7 +5,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:maintly_app/core/extensions/context-extensions.dart';
 import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
-import 'package:maintly_app/features/auth/services/auth_service.dart';
+import 'package:maintly_app/features/location/enums/location_permission_status.dart';
+import 'package:maintly_app/features/location/services/location_permission_service.dart';
+import 'package:maintly_app/features/splash_and_on_boarding/helpers/continue_to_app.dart';
 import 'package:maintly_app/utils/assets/assets.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,17 +21,35 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    final authService = serviceLocator<AuthService>();
-    Future.delayed(const Duration(seconds: 4), () {
-      if (!mounted) return;
-      if (authService.isSignedIn()) {
-        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.workOrdersScreen, (_) => false);
-      } else if (!authService.isOnBoardingSeen()) {
-        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.onBoardingScreen, (_) => false);
-      } else {
-        Navigator.pushNamedAndRemoveUntil(context, AppRoutesNames.signinScreen, (_) => false);
-      }
-    });
+    _handleNavigation();
+  }
+
+  Future<void> _handleNavigation() async {
+    final locationService = serviceLocator<LocationPermissionService>();
+
+    final status = await locationService.checkPermission();
+
+    switch (status) {
+      case LocationPermissionStatus.granted:
+        await continueToApp();
+        break;
+
+      case LocationPermissionStatus.denied:
+      case LocationPermissionStatus.deniedForever:
+      case LocationPermissionStatus.serviceDisabled:
+        await _locationPermissionNotGranted(status);
+        break;
+    }
+  }
+
+  Future<void> _locationPermissionNotGranted(LocationPermissionStatus status) async {
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutesNames.locationPermissionRequired,
+      (_) => false,
+      arguments: status,
+    );
   }
 
   @override

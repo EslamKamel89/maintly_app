@@ -6,4 +6,5 @@ class AppRoutesNames {
   static const String signupScreen = '/signupScreen';
   static const String workOrdersScreen = '/workOrdersScreen';
   static const String workOrderScreen = '/workOrderScreen';
+  static const String locationPermissionRequired = '/locationPermissionRequired';
 }
