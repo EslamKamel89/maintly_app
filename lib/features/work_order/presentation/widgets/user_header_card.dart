@@ -191,21 +191,22 @@ class _UserHeaderCardState extends State<UserHeaderCard> with TickerProviderStat
 
                         const SizedBox(height: 28),
 
-                        const Row(
-                          children: [
-                            Expanded(
-                              child: _StatCard(value: "0", title: "Assigned"),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: _StatCard(value: "0", title: "In Progress"),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: _StatCard(value: "0", title: "Completed"),
-                            ),
-                          ],
-                        ),
+                        if (false)
+                          const Row(
+                            children: [
+                              Expanded(
+                                child: _StatCard(value: "0", title: "Assigned"),
+                              ),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: _StatCard(value: "0", title: "In Progress"),
+                              ),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: _StatCard(value: "0", title: "Completed"),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
             ),

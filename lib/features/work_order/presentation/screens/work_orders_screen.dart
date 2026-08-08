@@ -6,6 +6,7 @@ import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/features/auth/models/response/user.dart';
 import 'package:maintly_app/features/auth/services/auth_service.dart';
+import 'package:maintly_app/features/location/services/location_tracking_service.dart';
 import 'package:maintly_app/features/work_order/presentation/controllers/work_orders/work_orders_cubit.dart';
 import 'package:maintly_app/features/work_order/presentation/controllers/work_orders/work_orders_state.dart';
 import 'package:maintly_app/features/work_order/presentation/widgets/user_header_card.dart';
@@ -42,12 +43,20 @@ class _WorkOrderView extends StatefulWidget {
 
 class _WorkOrderViewState extends State<_WorkOrderView> {
   final TextEditingController _searchController = TextEditingController();
-
+  final LocationTrackingService _locationTrackingService =
+      serviceLocator<LocationTrackingService>();
   WorkOrdersCubit get cubit => context.read<WorkOrdersCubit>();
+  @override
+  void initState() {
+    super.initState();
+
+    _locationTrackingService.start();
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _locationTrackingService.stop();
     super.dispose();
   }
 

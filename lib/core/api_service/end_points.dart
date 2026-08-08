@@ -7,4 +7,5 @@ class EndPoint {
   static const String attachmentsEndpoint = '$baseUrl/api/attachments';
   static String completeWorkOrderEndpoint(int workOrderId) =>
       '$workOrdersEndpoint/$workOrderId/complete';
+  static const String technicianLocationEndpoint = '$baseUrl/api/technicians/location';
 }

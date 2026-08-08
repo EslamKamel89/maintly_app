@@ -7,6 +7,8 @@ import 'package:maintly_app/core/router/app_router.dart';
 import 'package:maintly_app/core/router/middleware.dart';
 import 'package:maintly_app/features/auth/services/auth_service.dart';
 import 'package:maintly_app/features/location/services/location_permission_service.dart';
+import 'package:maintly_app/features/location/services/location_tracking_service.dart';
+import 'package:maintly_app/features/location/services/technician_location_api_service.dart';
 import 'package:maintly_app/features/work_order/services/work_orders_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,4 +29,8 @@ Future initServiceLocator() async {
   serviceLocator.registerLazySingleton<LocationPermissionService>(
     () => const LocationPermissionService(),
   );
+  serviceLocator.registerLazySingleton<TechnicianLocationApiService>(
+    () => TechnicianLocationApiService(),
+  );
+  serviceLocator.registerLazySingleton<LocationTrackingService>(() => LocationTrackingService());
 }
