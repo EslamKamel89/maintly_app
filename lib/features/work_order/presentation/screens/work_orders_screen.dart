@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maintly_app/core/enums/api_status.dart';
 import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
+import 'package:maintly_app/core/widgets/show_are_you_sure_dialog.dart';
 import 'package:maintly_app/features/auth/models/response/user.dart';
 import 'package:maintly_app/features/auth/services/auth_service.dart';
 import 'package:maintly_app/features/location/services/location_tracking_service.dart';
@@ -68,7 +69,28 @@ class _WorkOrderViewState extends State<_WorkOrderView> {
   Widget build(BuildContext context) {
     // serviceLocator<SharedPreferences>().clear();
     return Scaffold(
-      appBar: AppBar(title: const Text('Work Orders'), centerTitle: false),
+      appBar: AppBar(
+        title: const Text('Work Orders'),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            tooltip: 'Log out',
+            icon: const Icon(Icons.logout_rounded),
+            onPressed: () async {
+              final confirmed = await showAreYouSureDialog();
+
+              if (confirmed != true) {
+                return;
+              }
+
+              await serviceLocator<AuthService>().logout();
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(AppRoutesNames.signinScreen, (_) => false);
+            },
+          ),
+        ],
+      ),
       body: BlocBuilder<WorkOrdersCubit, WorkOrdersState>(
         builder: (context, state) {
           if (state.status == ApiStatus.loading) {

@@ -1,32 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:maintly_app/core/globals.dart';
-import 'package:maintly_app/utils/styles/styles.dart';
 
 Future<bool?> showAreYouSureDialog() async {
-  BuildContext? context = navigatorKey.currentContext;
-  if (context == null) return null;
-  final bool? result = await showDialog<bool>(
+  final context = navigatorKey.currentContext;
+
+  if (context == null) {
+    return null;
+  }
+
+  return showDialog<bool>(
     context: context,
-    builder: (contex) {
+    barrierDismissible: true,
+    builder: (context) {
+      final theme = Theme.of(context);
+      final colorScheme = theme.colorScheme;
+
       return AlertDialog(
-        title: txt('Warning', e: St.bold14, c: Colors.red),
-        content: txt('Do You Want To Proceed?!', e: St.semi12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+        titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+        title: Column(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: colorScheme.error.withOpacity(.10),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.logout_rounded, size: 30, color: colorScheme.error),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Log Out?',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to log out of your Maintly account?',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 15, height: 1.5, color: theme.colorScheme.onSurfaceVariant),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
         actions: [
-          TextButton(
-            child: txt('Yes', e: St.reg12),
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-          ),
-          TextButton(
-            child: txt('No', e: St.reg12),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colorScheme.error,
+                    foregroundColor: colorScheme.onError,
+                  ),
+                  icon: const Icon(Icons.logout_rounded, size: 18),
+                  label: const Text('Log Out'),
+                ),
+              ),
+            ],
           ),
         ],
       );
     },
   );
-  return result;
 }

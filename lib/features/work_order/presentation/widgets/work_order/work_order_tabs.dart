@@ -208,7 +208,7 @@ class _WorkOrderTabsState extends State<WorkOrderTabs> {
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 400.ms);
+    );
   }
 }
 
