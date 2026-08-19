@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "740803270190",
+    "project_id": "maintly-a126e",
+    "storage_bucket": "maintly-a126e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740803270190:android:d4690f1884400e5f69f1bf",
+        "android_client_info": {
+          "package_name": "com.gaztec.maintly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0QtlrK1A5dtYEI3Ulf0qEFBvNzJp0uRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740803270190:android:c414fd169a22f76269f1bf",
+        "android_client_info": {
+          "package_name": "com.gaztec.maintly_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0QtlrK1A5dtYEI3Ulf0qEFBvNzJp0uRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

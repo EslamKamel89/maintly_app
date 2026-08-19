@@ -1,4 +1,4 @@
-package com.gaztec.maintly_app
+package com.gaztec.maintly
 
 import io.flutter.embedding.android.FlutterActivity
 
