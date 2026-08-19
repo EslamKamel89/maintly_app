@@ -8,12 +8,15 @@ import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/core/themes/theme_cubit.dart';
 import 'package:maintly_app/core/widgets/keyboard_dismiss_on_scroll.dart';
+import 'package:maintly_app/features/notifications/utils/firebase.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initServiceLocator();
   await findSystemLocale();
   await EasyLocalization.ensureInitialized();
+  await notificationsInit();
+
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
@@ -24,10 +27,21 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  @override
+  void initState() {
+    super.initState();
+    initializeNotifications();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
