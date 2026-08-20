@@ -5,8 +5,9 @@ import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/features/notifications/models/notification_model.dart';
 
 Future<void> onNotificationClick(NotificationModel model) async {
-  pr(model, 'notification model - onNotificationClick handler');
-  final context = navigatorKey.currentContext;
+  final t = 'notification model - onNotificationClick handler';
+  pr(model, t);
+  var context = navigatorKey.currentContext;
   if (context == null) return;
   if (model.routeName == AppRoutesNames.workOrderScreen) {
     final workOrderId = model.payload?['work_order_id'];
@@ -16,9 +17,7 @@ Future<void> onNotificationClick(NotificationModel model) async {
       return;
     }
 
-    Navigator.of(context).pushNamed(AppRoutesNames.workOrdersScreen);
-
-    Navigator.of(
+    await Navigator.of(
       context,
     ).pushNamed(AppRoutesNames.workOrderScreen, arguments: {'workOrderId': workOrderId});
   }
