@@ -10,6 +10,7 @@ import 'package:maintly_app/core/services/base_service.dart';
 import 'package:maintly_app/core/static_data/shared_prefrences_key.dart';
 import 'package:maintly_app/features/auth/models/response/auth_response.dart';
 import 'package:maintly_app/features/auth/models/response/user.dart';
+import 'package:maintly_app/features/notifications/utils/firebase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService extends BaseService {
@@ -24,11 +25,11 @@ class AuthService extends BaseService {
     required String password,
   }) async {
     const t = 'login - AuthService';
-
+    String? fcmToken = await getFcmToken();
     try {
       final raw = await api.post(
         EndPoint.loginEndpoint,
-        data: {'email': email, 'password': password},
+        data: {'email': email, 'password': password, 'fcm_token': fcmToken},
       );
 
       pr(raw, '$t - raw response');
@@ -49,6 +50,7 @@ class AuthService extends BaseService {
     required String organizationName,
   }) async {
     const t = 'register - AuthService';
+    String? fcmToken = await getFcmToken();
 
     try {
       final raw = await api.post(
@@ -58,6 +60,7 @@ class AuthService extends BaseService {
           'email': email,
           'password': password,
           'organization_name': organizationName,
+          'fcm_token': fcmToken,
         },
       );
 

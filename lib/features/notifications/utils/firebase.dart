@@ -107,7 +107,7 @@ void setupInteractionHandlers() {
 
   FirebaseMessaging.instance.getInitialMessage().then(getInitialMessageFromTerminatedState);
 
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
     pr('FCM token refreshed: $newToken', 'FCM');
   });
 }
