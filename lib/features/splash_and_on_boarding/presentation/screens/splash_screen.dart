@@ -7,6 +7,7 @@ import 'package:maintly_app/core/router/app_routes_names.dart';
 import 'package:maintly_app/core/service_locator/service_locator.dart';
 import 'package:maintly_app/features/location/enums/location_permission_status.dart';
 import 'package:maintly_app/features/location/services/location_permission_service.dart';
+import 'package:maintly_app/features/notifications/utils/firebase.dart';
 import 'package:maintly_app/features/splash_and_on_boarding/helpers/continue_to_app.dart';
 import 'package:maintly_app/utils/assets/assets.dart';
 
@@ -26,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _handleNavigation() async {
     final locationService = serviceLocator<LocationPermissionService>();
-
+    await requestNotificationPermission();
     final status = await locationService.checkPermission();
 
     switch (status) {

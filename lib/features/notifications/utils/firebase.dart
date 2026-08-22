@@ -30,11 +30,11 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 
 Future<void> initializeNotifications() async {
   try {
-    await _ensureAndroidNotificationPermission();
+    // await _ensureAndroidNotificationPermission();
 
-    if (Platform.isIOS) {
-      await requestPermissions();
-    }
+    // if (Platform.isIOS) {
+    //   await requestPermissions();
+    // }
     setupForegroundMessageHandler();
     setupInteractionHandlers();
 
@@ -239,5 +239,13 @@ Future notificationsInit() async {
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
+  }
+}
+
+Future<void> requestNotificationPermission() async {
+  await _ensureAndroidNotificationPermission();
+
+  if (Platform.isIOS) {
+    await requestPermissions();
   }
 }
